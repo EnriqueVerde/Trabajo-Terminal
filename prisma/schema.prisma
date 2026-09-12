@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+}
+
+// Sesiones opacas: el cookie solo guarda `token`, la validez real vive acá.
+// El middleware (Edge) solo chequea que exista el cookie; la verificación
+// real contra esta tabla pasa en el server (API routes / server components).
+model Session {
+  token     String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

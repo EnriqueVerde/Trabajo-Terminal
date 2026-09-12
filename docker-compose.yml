@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: trabajo-terminal-mysql
+    restart: unless-stopped
+    ports:
+      - "3406:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: tt_root_pass
+      MYSQL_DATABASE: trabajo_terminal
+      MYSQL_USER: tt_user
+      MYSQL_PASSWORD: tt_pass
+    volumes:
+      - tt_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "tt_user", "-ptt_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tt_mysql_data:
